@@ -20,7 +20,6 @@ const ClientForm = ({ cities, loading }) => {
     const [selectedBank, setSelectedBank] = useState(null);
     const [selectedBankBranch, setSelectedBankBranch] = useState(null);
     const [isBankSelected, setIsBankSelected] = useState(false);
-
     const [banksLoading, setBanksLoading] = useState(false);
 
     useEffect(() => {
