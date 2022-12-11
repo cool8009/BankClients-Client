@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import CitiesService from './services/CitiesService';
-import TextField from '@material-ui/core/TextField';
 import ClientForm from './ClientForm';
 
 
@@ -10,8 +9,13 @@ const AddClient = () => {
     useEffect(() => {
         const getCities = async () => {
           setLoading(true);
-          const res = await CitiesService.getAllCities()
-                        .then(cities => cities.sort((a, b) => a.name.localeCompare(b.name, 'he')));
+          const res = await CitiesService.getAllCities();
+                cities.sort((a, b) => {
+                if (a.name === null || b.name === null) {
+                  return 1;
+            }
+            else return a.name.localeCompare(b.name, 'he')
+          });
           setCities(res);
           setLoading(false);  
         }
@@ -19,7 +23,7 @@ const AddClient = () => {
       }, [])
     return (
       <div>
-         <h1>Sign up:</h1>
+         <h1 style={{ textAlign: 'center', margin: '0 auto' }} >Sign up:</h1>
          <ClientForm cities={cities} loading={loading}/>
       </div>
     )

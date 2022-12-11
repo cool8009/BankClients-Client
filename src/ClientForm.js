@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BanksService from './services/BanksService'
-import { TextField, FormControl, FormHelperText, Box, Grid, Container } from '@material-ui/core';
+import ClientsService from './services/ClientsService'
+import { TextField, FormControl, FormHelperText, Box, Grid, Container, Button } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 
 const ClientForm = ({ cities, loading }) => {
@@ -89,16 +90,31 @@ const ClientForm = ({ cities, loading }) => {
     }
 
     // Event handler for when the form is submitted
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
       event.preventDefault();
-      // Use the fetch API to post the form data to the API endpoint
-      fetch('https://example.com/api/submit', {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      if (error !== null) {
+        alert("Form wasn't filled correctly")
+        return;
+      }
+      const date = new Date(formData.dateOfBirth);
+      const formattedDate = date.toISOString();
+      const res = await ClientsService.addClient({
+        hebrewName: formData.hebrewName,
+        englishName: formData.englishName,
+        dateOfBirth: formattedDate,
+        ssn: formData.ssn,
+        cityId: selectedCity.id,
+        bankCode: selectedBank.Code,
+        bankBranch: selectedBankBranch.BranchNumber,
+        bankAccountNumber: formData.accountNumber
+      }).then((res) =>{ 
+        console.log(res)
+        alert('Added successfully')
+      }).catch((error) => {
+        console.log(error)
+        alert("Client wasn't added successfully")
+    });
+
     };
   
     if (loading) {
@@ -107,143 +123,151 @@ const ClientForm = ({ cities, loading }) => {
     return (
         <Container maxWidth="sm">
             <Box my={2}>
-            <FormControl onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} >
-                        <TextField
-                        fullWidth
-                        required
-                        inputProps={{ 
-                            pattern: "^[א-תןםץךף'\\s-]+$",
-                            maxLength: 20
-                        }}
-                        id="hebrewName"
-                        label="Enter Hebrew Name: Up to 20 characters"
-                        type="text"
-                        name="hebrewName"
-                        onChange={handleChange}
-                        />
-                        {error && error.hebrewName && (
-                            <FormHelperText error>Invalid Input. Hebrew Only.</FormHelperText>
-                        )}
-                    </Grid>
-                    <Grid item xs={12} >
-                        <TextField
-                        fullWidth
-                        required
-                        inputProps={{ 
-                            pattern: "[a-zA-Z'-\\s]",
-                            maxLength: 15
-                        }}
-                        id="englishName"
-                        label="Enter English Name"
-                        type="text"
-                        name="englishName"
-                        onChange={handleChange}
-                        />
-                        {error && error.englishName && (
-                            <FormHelperText error>Invalid Input. English Only.</FormHelperText>
-                        )}
-                    </Grid>
-                    <Grid item xs={12} >
-                        <TextField
-                        fullWidth
-                        id="dateOfBirth"
-                        label="Enter date"
-                        type="date"
-                        name="dateOfBirth"
-                        onChange={handleChange}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} >
-                        <TextField
-                        fullWidth
-                        required
-                        inputProps={{ 
-                            pattern: "^[0-9]{9}$",
-                            maxLength: 9,
-                        }}
-                        id="ssn"
-                        label="Enter your SSN"
-                        type="text"
-                        name="ssn"
-                        onChange={handleChange}
-                        />
-                        {error && error.ssn && (
-                            <FormHelperText error>Invalid Input. 9 Numbers Only.</FormHelperText>
-                        )}
-                    </Grid>
-                    <Grid item xs={12} >
-                        <Autocomplete
-                        id="city"
-                        name="city"
-                        options={cities}
-                        fullWidth
-                        getOptionLabel={(option) => option.name}
-                        getOptionSelected={(option, value) => option.id === value.id}
-                        onChange={handleCityChange}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Select your city" />
-                        )}
-                        />
-                    </Grid>
-                    <Grid item xs={12} >
-                        <Autocomplete
-                        disabled={!isCitySelected}
-                        id="bank"
-                        name="bank"
-                        options={banks}
-                        fullWidth
-                        getOptionLabel={(option) => option.Description}
-                        getOptionSelected={(option, value) => option.Code === value.Code}
-                        onChange={handleBankChange}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Select your bank" />
-                        )}
-                        />
-                    </Grid>
-                    <Grid item xs={12} >
-                    <Autocomplete
-                        disabled={!isBankSelected}
-                        id="bank"
-                        name="bank"
-                        options={bankBranches}
-                        fullWidth
-                        getOptionLabel={(option) => `${option.BranchNumber} - ${option.BranchName}`}
-                        getOptionSelected={(option, value) => option.BranchNumber === value.BranchNumber}
-                        onChange={handleBankBranchChange}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Select your bank branch" />
-                        )}
-                        />
-                    </Grid>
-                    <Grid item xs={12} >
-                        <TextField
-                        fullWidth
-                        required
-                        inputProps={{ 
-                            pattern: "^[0-9]{0,9}$",
-                            maxLength: 9,
-                        }}
-                        id="accountnumber"
-                        label="Enter account number"
-                        type="text"
-                        name="accountnumber"
-                        onChange={handleChange}
-                        />
-                        {error && error.accountnumber && (
-                            <FormHelperText error>Invalid Input. Up to 9 numbers only.</FormHelperText>
-                        )}
-                    </Grid>
-                    <Grid item xs={12} >
-                        <button type="submit">Submit</button>
-                    </Grid>
-
-                </Grid>
-            </FormControl>
+                <form onSubmit={handleSubmit}>
+                    <FormControl>
+                        <Grid container spacing={2} justifyContent="center" alignItems="center">
+                            <Grid item xs={12} >
+                                <TextField
+                                fullWidth
+                                required
+                                inputProps={{ 
+                                    pattern: "^[א-תןםץךף'\\s-]+$",
+                                    maxLength: 20
+                                }}
+                                id="hebrewName"
+                                label="Enter Hebrew Name: Up to 20 characters"
+                                type="text"
+                                name="hebrewName"
+                                onChange={handleChange}
+                                />
+                                {error && error.hebrewName && (
+                                    <FormHelperText error>Invalid Input. Hebrew Only.</FormHelperText>
+                                )}
+                            </Grid>
+                            <Grid item xs={12} >
+                                <TextField
+                                fullWidth
+                                required
+                                inputProps={{ 
+                                    pattern: "^[a-zA-Z-'\\s]+$",
+                                    maxLength: 15
+                                }}
+                                id="englishName"
+                                label="Enter English Name"
+                                type="text"
+                                name="englishName"
+                                onChange={handleChange}
+                                />
+                                {error && error.englishName && (
+                                    <FormHelperText error>Invalid Input. English Only.</FormHelperText>
+                                )}
+                            </Grid>
+                            <Grid item xs={12} >
+                                <TextField
+                                fullWidth
+                                id="dateOfBirth"
+                                label="Enter date"
+                                type="date"
+                                name="dateOfBirth"
+                                onChange={handleChange}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} >
+                                <TextField
+                                fullWidth
+                                required
+                                inputProps={{ 
+                                    pattern: "^[0-9]{9}$",
+                                    maxLength: 9,
+                                }}
+                                id="ssn"
+                                label="Enter your SSN"
+                                type="text"
+                                name="ssn"
+                                onChange={handleChange}
+                                />
+                                {error && error.ssn && (
+                                    <FormHelperText error>Invalid Input. 9 Numbers Only.</FormHelperText>
+                                )}
+                            </Grid>
+                            <Grid item xs={12} >
+                                <Autocomplete
+                                id="city"
+                                name="city"
+                                options={cities}
+                                fullWidth
+                                getOptionLabel={(option) => { 
+                                    return option.name !== null ? option.name : 'null'
+                                }}
+                                getOptionSelected={(option, value) => option.id === value.id}
+                                onChange={handleCityChange}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Select your city" />
+                                )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} >
+                                <Autocomplete
+                                disabled={!isCitySelected}
+                                id="bank"
+                                name="bank"
+                                options={banks}
+                                fullWidth
+                                getOptionLabel={(option) => option.Description}
+                                getOptionSelected={(option, value) => option.Code === value.Code}
+                                onChange={handleBankChange}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Select your bank" />
+                                )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} >
+                            <Autocomplete
+                                disabled={!isBankSelected}
+                                id="bank"
+                                name="bank"
+                                options={bankBranches}
+                                fullWidth
+                                getOptionLabel={(option) => `${option.BranchNumber} - ${option.BranchName}`}
+                                getOptionSelected={(option, value) => option.BranchNumber === value.BranchNumber}
+                                onChange={handleBankBranchChange}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Select your bank branch" />
+                                )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} >
+                                <TextField
+                                fullWidth
+                                required
+                                inputProps={{ 
+                                    pattern: "^[0-9]{0,9}$",
+                                    maxLength: 9,
+                                }}
+                                id="accountNumber"
+                                label="Enter account number"
+                                type="text"
+                                name="accountNumber"
+                                onChange={handleChange}
+                                />
+                                {error && error.accountNumber && (
+                                    <FormHelperText error>Invalid Input. Up to 9 numbers only.</FormHelperText>
+                                )}
+                            </Grid>
+                            <Grid item xs={12} >
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                >
+                                    Submit
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </FormControl>
+                </form>
             </Box>
         </Container>
     );
