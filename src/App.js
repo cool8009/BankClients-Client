@@ -1,7 +1,7 @@
-import AddClient from './AddClient';
+import AddClient from './views/AddClient';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
 import './App.css';
-import ViewClients from './ViewClients';
+import ViewClients from './views/ViewClients';
 import Navbar from './Navbar';
 
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import ClientsService from './services/ClientsService'
-import CitiesService from './services/CitiesService'
+import ClientsService from '../services/ClientsService'
+import CitiesService from '../services/CitiesService'
 import { Paper, Table, TableContainer, TableCell, TableBody, TableHead, TableRow } from '@material-ui/core';
 
 const ViewClients = () => {
@@ -8,6 +8,7 @@ const ViewClients = () => {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  //useEffect to get client data and city data
   useEffect(() => {
     const getData = async () => {
       setLoading(true);

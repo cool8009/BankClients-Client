@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import BanksService from './services/BanksService'
-import ClientsService from './services/ClientsService'
+import BanksService from '../services/BanksService'
+import ClientsService from '../services/ClientsService'
 import { TextField, FormControl, FormHelperText, Box, Grid, Container, Button } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 
@@ -22,6 +22,7 @@ const ClientForm = ({ cities, loading }) => {
     const [isBankSelected, setIsBankSelected] = useState(false);
     const [banksLoading, setBanksLoading] = useState(false);
 
+    //useEffect for getting banks from the server, when selectedCity changes
     useEffect(() => {
         const getBanks = async () => {
             if (selectedCity !== null && isCitySelected !== false) {
@@ -40,7 +41,7 @@ const ClientForm = ({ cities, loading }) => {
     }, [selectedCity])
     
 
-    // Event handler for when the form data changes
+    // Event handlers for when the form data changes
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -117,6 +118,7 @@ const ClientForm = ({ cities, loading }) => {
     };
   
     if (loading) {
+        //displays loading incase loading state is set to true
         return <h2>Loading...</h2>
     }
     return (

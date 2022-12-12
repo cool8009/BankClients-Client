@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import CitiesService from './services/CitiesService';
-import ClientForm from './ClientForm';
+import CitiesService from '../services/CitiesService';
+import ClientForm from '../components/ClientForm';
 
-
+//Add client view
 const AddClient = () => {
     const [cities, setCities] = useState([])
     const [loading, setLoading] = useState(false);
     useEffect(() => {
+      // useEffect for getting all cities from the server
         const getCities = async () => {
           setLoading(true);
           const res = await CitiesService.getAllCities();
